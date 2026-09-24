@@ -50,6 +50,19 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 ul.why{padding-left:20px;margin:0}ul.why li{margin:6px 0}
 footer{text-align:center;font-size:.85rem;opacity:.75;padding:0 20px 34px;max-width:60ch;margin:0 auto}
 .theme{position:fixed;right:14px;top:calc(12px + env(safe-area-inset-top,0px));padding:6px 14px;font-size:.85rem}
+.feed{text-align:center}
+.feedface{position:relative;width:200px;margin:0 auto}
+#mini{width:100%;display:block}
+.chew{animation:wig .5s ease-in-out 2}
+.chew #tt{animation:ch .18s ease-in-out 6}
+@keyframes ch{50%{transform:translateY(7px)}}
+.fly{position:absolute;left:50%;bottom:-10px;font-size:2.2rem;opacity:0;pointer-events:none}
+.fly.go{animation:fl .7s ease-in forwards}
+@keyframes fl{0%{opacity:1;transform:translate(-50%,40px) scale(1.2)}100%{opacity:0;transform:translate(-50%,-70px) scale(.5)}}
+.say{min-height:3.4em;font-weight:600;margin:10px 0}
+.meter{display:grid;grid-template-columns:auto 1fr 3rem;gap:10px;align-items:center;margin:8px 0 14px;font-size:.95rem}
+.foods{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.foods button:disabled{opacity:.45;cursor:not-allowed;transform:none}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -123,6 +136,26 @@ footer{text-align:center;font-size:.85rem;opacity:.75;padding:0 20px 34px;max-wi
 </ul></div>
 </section>
 <section>
+<h2>Beri Makan Bidoof</h2>
+<div class="card feed">
+<div class="feedface"><svg id="mini" viewBox="10 70 220 240" aria-hidden="true"><use href="#head" stroke="#2a1c12" stroke-width="7" stroke-linejoin="round"/><use href="#head" stroke="none"/>
+<use href="#patch" stroke="#2a1c12" stroke-width="4"/><use href="#patch" stroke="none"/>
+<ellipse cx="90" cy="182" rx="6" ry="8" fill="#1a110a"/><ellipse cx="150" cy="182" rx="6" ry="8" fill="#1a110a"/>
+<circle cx="92" cy="179" r="2.2" fill="#fff"/><circle cx="152" cy="179" r="2.2" fill="#fff"/>
+<ellipse cx="120" cy="224" rx="52" ry="32" fill="#4a4038" stroke="#2a1c12" stroke-width="4"/>
+<ellipse cx="120" cy="204" rx="10" ry="7" fill="#d84040" stroke="#2a1c12" stroke-width="2"/>
+<g id="tt"><rect x="100" y="234" width="40" height="30" rx="5" fill="#fffdf5" stroke="#2a1c12" stroke-width="3"/><path d="M120 235v28" stroke="#2a1c12" stroke-width="2"/></g></svg><span id="fly" class="fly" aria-hidden="true"></span></div>
+<p class="say" id="say" aria-live="polite">Bidoof menatapmu penuh harap. Mau kasih apa?</p>
+<div class="meter"><span>Kenyang</span><div class="track"><div class="fill" id="full" style="width:0"></div></div><span id="pc">0%</span></div>
+<div class="foods">
+<button type="button" data-f="berry">🫐 Oran Berry</button>
+<button type="button" data-f="cookie">🍪 Dubai Chewy Cookie</button>
+<button type="button" data-f="soup">🍲 Sup Tom Yum</button>
+</div>
+<p style="margin:12px 0 0"><button type="button" id="reset" hidden>Lapar lagi</button></p>
+</div>
+</section>
+<section>
 <h2>Petuah Bidoof</h2>
 <div class="card"><div class="quote" id="q" aria-live="polite">Tekan tombol untuk mendengar petuah.</div>
 <p style="margin:14px 0 0"><button type="button" id="wis">Minta petuah</button></p></div>
@@ -141,6 +174,16 @@ b.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.prev
 var quotes=["Bendungan tidak dibangun dalam sehari, tapi gigi bisa mulai hari ini.","Tak perlu jadi legendaris. Jadilah yang selalu bisa diandalkan.","Kalau jalan buntu, gigit saja pohonnya.","Rendah hati itu kuat. Doof.","Semua rute dimulai dengan satu langkah dan satu Bidoof.","Sabar seperti air sungai, gigih seperti gigi depan."];
 var qi=-1;document.getElementById('wis').addEventListener('click',function(){var i;do{i=Math.floor(Math.random()*quotes.length)}while(i===qi);qi=i;document.getElementById('q').textContent=quotes[i]});
 document.getElementById('theme').addEventListener('click',function(){var r=document.documentElement,d=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);r.setAttribute('data-theme',d?'light':'dark')});
+var FD={berry:{g:15,e:"🫐",t:["Nyam! Oran Berry-nya segar dan Bidoof menggigit dengan puas.","Bidoof mengunyah pelan sambil menyipitkan mata. Manis!","Satu gigitan, satu berry hilang. Doof!"]},
+cookie:{g:25,e:"🍪",t:["Kres! Pistachio berhamburan dan Bidoof mengunyah dengan semangat.","Kunyahan keras dari Dubai Chewy Cookie. Gigi Bidoof bekerja lembur!","Bidoof menjilat remah cokelat di sekitar gigi. Minta lagi?"]},
+soup:{g:20,e:"🍲",t:["Slurp! Pedas, Bidoof kepanasan lalu minta lagi.","Sup Tom Yum yang asam pedas bikin hidung Bidoof merah. Nikmat!","Bidoof meniup sup, lalu menyeruput sampai habis."]}};
+var full=0,fb=document.querySelectorAll('.foods button'),mini=document.getElementById('mini'),fly=document.getElementById('fly'),say=document.getElementById('say'),rs=document.getElementById('reset');
+function upd(){document.getElementById('full').style.width=full+'%';document.getElementById('pc').textContent=full+'%'}
+fb.forEach(function(b){b.addEventListener('click',function(){var f=FD[b.dataset.f];full=Math.min(100,full+f.g);upd();
+fly.textContent=f.e;fly.classList.remove('go');mini.classList.remove('chew');void mini.getBoundingClientRect();fly.classList.add('go');mini.classList.add('chew');
+if(full>=100){say.textContent="Bidoof kekenyangan dan tertidur pulas. Zzz... Terima kasih makanannya!";fb.forEach(function(x){x.disabled=true});rs.hidden=false}
+else say.textContent=f.t[Math.floor(Math.random()*f.t.length)]})});
+rs.addEventListener('click',function(){full=0;upd();fb.forEach(function(x){x.disabled=false});rs.hidden=true;say.textContent="Bidoof bangun dan perutnya sudah keroncongan lagi."});
 </script>
 </body>
 </html>
